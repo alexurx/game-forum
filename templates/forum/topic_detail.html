@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ topic.title }} - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="{% url 'forum:category_detail' topic.category.pk %}" style="color: var(--primary); text-decoration: none;">
+        ← Назад к {{ topic.category.name }}
+    </a>
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div>
+            <h1>{{ topic.title }}</h1>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                {% if topic.is_pinned %}<span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px;">Закреплено</span>{% endif %}
+                {% if topic.is_closed %}<span style="background: var(--text-secondary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px;">Закрыто</span>{% endif %}
+                • 👁️ {{ topic.views }} просмотров
+            </div>
+        </div>
+        {% if user.role == 'moderator' or user.role == 'admin' %}
+        <a href="{% url 'forum:close_topic' topic.pk %}" class="btn btn-secondary">
+            {% if topic.is_closed %}Открыть{% else %}Закрыть{% endif %}
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+{% for post in posts %}
+<div class="card" style="display: flex; gap: 1.5rem;">
+    <div style="min-width: 150px; text-align: center;">
+        <a href="{% url 'users:profile' post.author.username %}" style="text-decoration: none;">
+            {% if post.author.avatar %}
+            <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}" 
+                 style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 0.5rem;">
+            {% else %}
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: white; 
+                        display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.5rem;">
+                {{ post.author.username|first|upper }}
+            </div>
+            {% endif %}
+            <div style="font-weight: 500; color: var(--text-primary);">{{ post.author.username }}</div>
+        </a>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+            {{ post.author.role|title }}
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+            💬 {{ post.author.get_post_count }}
+        </div>
+    </div>
+    <div style="flex: 1;">
+        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            {{ post.created_at|date:"d.m.Y H:i" }}
+            {% if post.is_edited %}<span>(изменено)</span>{% endif %}
+        </div>
+        <div style="white-space: pre-wrap; line-height: 1.6;">{{ post.content }}</div>
+        {% if user.is_authenticated %}
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            {% if user == post.author %}
+            <a href="{% url 'forum:edit_post' post.pk %}" style="color: var(--primary); text-decoration: none; font-size: 0.85rem;">Редактировать</a>
+            {% endif %}
+            {% if user == post.author or user.role == 'moderator' or user.role == 'admin' %}
+            <a href="{% url 'forum:delete_post' post.pk %}" style="color: #dc2626; text-decoration: none; font-size: 0.85rem;">Удалить</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+{% if posts.has_other_pages %}
+<div class="pagination">
+    {% if posts.has_previous %}
+        <a href="?page={{ posts.previous_page_number }}">Назад</a>
+    {% endif %}
+    <span class="current">{{ posts.number }} из {{ posts.paginator.num_pages }}</span>
+    {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}">Вперед</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if user.is_authenticated and not topic.is_closed %}
+<div class="card">
+    <h3>Ответить</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_content">Сообщение</label>
+            <textarea name="content" id="id_content" rows="6" style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;"></textarea>
+        </div>
+        <button type="submit" class="btn">Отправить</button>
+    </form>
+</div>
+{% elif not user.is_authenticated %}
+<div class="card" style="text-align: center;">
+    <p><a href="{% url 'users:login' %}?next={{ request.path }}" style="color: var(--primary);">Войдите</a>, чтобы ответить</p>
+</div>
+{% elif topic.is_closed %}
+<div class="card" style="text-align: center;">
+    <p style="color: var(--text-secondary);">Тема закрыта для обсуждения</p>
+</div>
+{% endif %}
+{% endblock %}

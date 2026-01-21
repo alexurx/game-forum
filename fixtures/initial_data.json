@@ -1,0 +1,89 @@
+[
+  {
+    "model": "forum.category",
+    "pk": 1,
+    "fields": {
+      "name": "Общее обсуждение",
+      "description": "Общие вопросы и обсуждения игры",
+      "order": 1
+    }
+  },
+  {
+    "model": "forum.category",
+    "pk": 2,
+    "fields": {
+      "name": "Гайды и стратегии",
+      "description": "Делитесь тактиками и стратегиями",
+      "order": 2
+    }
+  },
+  {
+    "model": "forum.category",
+    "pk": 3,
+    "fields": {
+      "name": "Новости и обновления",
+      "description": "Последние новости игры",
+      "order": 3
+    }
+  },
+  {
+    "model": "achievements.achievement",
+    "pk": 1,
+    "fields": {
+      "name": "Новичок",
+      "description": "Написали первое сообщение",
+      "icon": "✍️",
+      "requirement_type": "first_post",
+      "requirement_value": 1,
+      "order": 1
+    }
+  },
+  {
+    "model": "achievements.achievement",
+    "pk": 2,
+    "fields": {
+      "name": "Создатель",
+      "description": "Создали первую тему",
+      "icon": "🎯",
+      "requirement_type": "first_topic",
+      "requirement_value": 1,
+      "order": 2
+    }
+  },
+  {
+    "model": "achievements.achievement",
+    "pk": 3,
+    "fields": {
+      "name": "Активист",
+      "description": "Написали 10 сообщений",
+      "icon": "💬",
+      "requirement_type": "post_count",
+      "requirement_value": 10,
+      "order": 3
+    }
+  },
+  {
+    "model": "achievements.achievement",
+    "pk": 4,
+    "fields": {
+      "name": "Ветеран",
+      "description": "Написали 50 сообщений",
+      "icon": "🏆",
+      "requirement_type": "post_count",
+      "requirement_value": 50,
+      "order": 4
+    }
+  },
+  {
+    "model": "achievements.achievement",
+    "pk": 5,
+    "fields": {
+      "name": "Популярный",
+      "description": "Ваша тема набрала 20 ответов",
+      "icon": "⭐",
+      "requirement_type": "popular_topic",
+      "requirement_value": 20,
+      "order": 5
+    }
+  }
+]

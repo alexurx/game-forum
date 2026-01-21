@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div>
+        <h1>{{ category.name }}</h1>
+        <p style="color: var(--text-secondary);">{{ category.description }}</p>
+    </div>
+    <a href="{% url 'forum:create_topic' category.pk %}" class="btn">Создать тему</a>
+</div>
+
+{% for topic in topics %}
+<div class="card" style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+    <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            {% if topic.is_pinned %}<span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">Закреплено</span>{% endif %}
+            {% if topic.is_closed %}<span style="background: var(--text-secondary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">Закрыто</span>{% endif %}
+        </div>
+        <h3>
+            <a href="{% url 'forum:topic_detail' topic.pk %}" style="color: var(--text-primary); text-decoration: none;">
+                {{ topic.title }}
+            </a>
+        </h3>
+        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+            Создано <a href="{% url 'users:profile' topic.author.username %}" style="color: var(--primary); text-decoration: none;">{{ topic.author.username }}</a>
+            • {{ topic.created_at|date:"d.m.Y H:i" }}
+        </div>
+    </div>
+    <div style="text-align: right; color: var(--text-secondary); font-size: 0.85rem; min-width: 100px;">
+        <div>💬 {{ topic.post_count }}</div>
+        <div>👁️ {{ topic.views }}</div>
+    </div>
+</div>
+{% empty %}
+<div class="card">
+    <p style="text-align: center; color: var(--text-secondary);">Тем пока нет. Будьте первым!</p>
+</div>
+{% endfor %}
+
+{% if topics.has_other_pages %}
+<div class="pagination">
+    {% if topics.has_previous %}
+        <a href="?page=1">Первая</a>
+        <a href="?page={{ topics.previous_page_number }}">Назад</a>
+    {% endif %}
+    
+    <span class="current">{{ topics.number }} из {{ topics.paginator.num_pages }}</span>
+    
+    {% if topics.has_next %}
+        <a href="?page={{ topics.next_page_number }}">Вперед</a>
+        <a href="?page={{ topics.paginator.num_pages }}">Последняя</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Достижения - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Все достижения</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+    {% for achievement in achievements %}
+    <div class="card">
+        <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">{{ achievement.icon }}</div>
+        <h3 style="text-align: center; margin-bottom: 0.5rem;">{{ achievement.name }}</h3>
+        <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1rem;">
+            {{ achievement.description }}
+        </p>
+        <div style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); background: var(--bg-tertiary); padding: 0.5rem; border-radius: 6px;">
+            {% if achievement.requirement_type == 'first_post' %}
+                Создайте первое сообщение
+            {% elif achievement.requirement_type == 'first_topic' %}
+                Создайте первую тему
+            {% elif achievement.requirement_type == 'post_count' %}
+                Напишите {{ achievement.requirement_value }} сообщений
+            {% elif achievement.requirement_type == 'topic_count' %}
+                Создайте {{ achievement.requirement_value }} тем
+            {% elif achievement.requirement_type == 'popular_topic' %}
+                Получите {{ achievement.requirement_value }} ответов в теме
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="card" style="grid-column: 1/-1; text-align: center;">
+        <p style="color: var(--text-secondary);">Достижений пока нет</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

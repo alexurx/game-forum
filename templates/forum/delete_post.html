@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Удалить сообщение - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+    <h1>Подтверждение удаления</h1>
+    
+    <p style="margin: 1.5rem 0;">Вы уверены, что хотите удалить это сообщение?</p>
+    
+    <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+        <p style="white-space: pre-wrap;">{{ post.content|truncatewords:50 }}</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; gap: 0.5rem;">
+            <button type="submit" class="btn btn-danger">Удалить</button>
+            <a href="{% url 'forum:topic_detail' post.topic.pk %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

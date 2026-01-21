@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Панель модератора - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">🛡️ Панель модератора</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">{{ total_topics }}</div>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">Тем</div>
+    </div>
+    
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💬</div>
+        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">{{ total_posts }}</div>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">Сообщений</div>
+    </div>
+    
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">{{ total_users }}</div>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">Пользователей</div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <h2 style="margin-bottom: 1rem;">Последние темы</h2>
+    {% for topic in recent_topics %}
+    <div class="padding: 0.75rem 0; {% if not forloop.last %}border-bottom: 1px solid var(--border);{% endif %}">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <a href="{% url 'forum:topic_detail' topic.pk %}" style="color: var(--text-primary); text-decoration: none; font-weight: 500;">
+                    {{ topic.title }}
+                </a>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                    в <a href="{% url 'forum:category_detail' topic.category.pk %}" style="color: var(--primary); text-decoration: none;">{{ topic.category.name }}</a>
+                    от <a href="{% url 'users:profile' topic.author.username %}" style="color: var(--primary); text-decoration: none;">{{ topic.author.username }}</a>
+                    • {{ topic.created_at|date:"d.m.Y H:i" }}
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                {% if not topic.is_closed %}
+                <a href="{% url 'forum:close_topic' topic.pk %}" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: var(--text-secondary);">Закрыть</a>
+                {% else %}
+                <a href="{% url 'forum:close_topic' topic.pk %}" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Открыть</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p style="text-align: center; color: var(--text-secondary);">Нет тем</p>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 1rem;">Последние сообщения</h2>
+    {% for post in recent_posts %}
+    <div class="padding: 1rem 0; {% if not forloop.last %}border-bottom: 1px solid var(--border);{% endif %}">
+        <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+            <div style="flex: 1;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                    <a href="{% url 'users:profile' post.author.username %}" style="color: var(--primary); text-decoration: none;">{{ post.author.username }}</a>
+                    в <a href="{% url 'forum:topic_detail' post.topic.pk %}" style="color: var(--primary); text-decoration: none;">{{ post.topic.title }}</a>
+                    • {{ post.created_at|date:"d.m.Y H:i" }}
+                </div>
+                <div style="color: var(--text-primary);">{{ post.content|truncatewords:30 }}</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                <a href="{% url 'forum:topic_detail' post.topic.pk %}" style="color: var(--primary); text-decoration: none; font-size: 0.85rem;">Перейти</a>
+                <a href="{% url 'forum:delete_post' post.pk %}" style="color: #dc2626; text-decoration: none; font-size: 0.85rem;">Удалить</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p style="text-align: center; color: var(--text-secondary);">Нет сообщений</p>
+    {% endfor %}
+</div>
+
+{% if user.role == 'admin' %}
+<div class="card" style="margin-top: 2rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white;">
+    <h2 style="margin-bottom: 1rem;">⚙️ Администрирование</h2>
+    <p style="margin-bottom: 1rem;">Вы являетесь администратором. Вы можете управлять пользователями и назначать модераторов через админ-панель.</p>
+    <a href="/admin/" class="btn" style="background: white; color: var(--primary);">Открыть админ-панель</a>
+</div>
+{% endif %}
+{% endblock %}
