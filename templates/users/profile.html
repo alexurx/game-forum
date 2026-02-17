@@ -3,9 +3,55 @@
 {% block title %}{{ profile_user.username }} - {{ FORUM_CONFIG.name }}{% endblock %}
 
 {% block content %}
+<style>
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center;
+        }
+
+        .profile-header > div:last-child {
+            width: 100%;
+        }
+
+        .profile-stats {
+            justify-content: center !important;
+        }
+
+        .achievements-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    @media (max-width: 430px) {
+        .profile-avatar,
+        .profile-avatar img,
+        .profile-avatar > div {
+            width: 80px !important;
+            height: 80px !important;
+            font-size: 2rem !important;
+        }
+
+        .profile-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .profile-role-badge {
+            font-size: 0.85rem !important;
+            padding: 0.3rem 0.6rem !important;
+        }
+
+        .profile-stats {
+            flex-direction: column;
+            gap: 0.5rem !important;
+        }
+    }
+</style>
+
 <div class="card">
-    <div style="display: flex; gap: 2rem; align-items: start;">
-        <div style="text-align: center;">
+    <div class="profile-header" style="display: flex; gap: 2rem; align-items: start;">
+        <div class="profile-avatar" style="text-align: center;">
             {% if profile_user.avatar %}
             <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}" 
                  style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
@@ -21,15 +67,15 @@
             <h1>{{ profile_user.username }}</h1>
             <div style="display: flex; gap: 1rem; margin: 1rem 0; color: var(--text-secondary); flex-wrap: wrap;">
                 {% if profile_user.role == 'admin' %}
-                <span style="background: linear-gradient(135deg, #ff4655 0%, #ff8800 100%); color: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500;">
+                <span class="profile-role-badge" style="background: linear-gradient(135deg, #ff4655 0%, #ff8800 100%); color: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500;">
                     👑 Администратор
                 </span>
                 {% elif profile_user.role == 'moderator' %}
-                <span style="background: #6366f1; color: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500;">
+                <span class="profile-role-badge" style="background: #6366f1; color: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500;">
                     🛡️ Модератор
                 </span>
                 {% else %}
-                <span style="background: var(--bg-tertiary); padding: 0.4rem 0.8rem; border-radius: 6px;">
+                <span class="profile-role-badge" style="background: var(--bg-tertiary); padding: 0.4rem 0.8rem; border-radius: 6px;">
                     👤 Пользователь
                 </span>
                 {% endif %}
@@ -37,10 +83,10 @@
             </div>
             
             {% if profile_user.bio %}
-            <p style="margin-top: 1rem; color: var(--text-secondary);">{{ profile_user.bio }}</p>
+            <p style="margin-top: 1rem; color: var(--text-secondary); word-wrap: break-word;">{{ profile_user.bio }}</p>
             {% endif %}
             
-            <div style="display: flex; gap: 2rem; margin-top: 1.5rem; font-size: 0.95rem;">
+            <div class="profile-stats" style="display: flex; gap: 2rem; margin-top: 1.5rem; font-size: 0.95rem;">
                 <div>
                     <strong>{{ profile_user.get_topic_count }}</strong>
                     <span style="color: var(--text-secondary);">тем</span>
@@ -65,7 +111,7 @@
 {% if achievements %}
 <div class="card">
     <h2>Достижения</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+    <div class="achievements-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
         {% for user_achievement in achievements %}
         <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 6px;">
             <div style="font-size: 2rem; margin-bottom: 0.5rem;">{{ user_achievement.achievement.icon }}</div>

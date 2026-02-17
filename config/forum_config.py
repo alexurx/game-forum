@@ -1,11 +1,33 @@
 FORUM_CONFIG = {
-    'name': 'Valorant Community',
-    'description': 'Сообщество игроков Valorant',
-    'game_title': 'Valorant',
-    'primary_color': '#ff4655',
-    'secondary_color': '#0f1923',
-    'icon': '🎯',
-    'logo_text': 'Valorant',
-    'meta_description': 'Форум для обсуждения Valorant - стратегии, гайды, новости',
+    'name': 'GTA V Online Community',
+    'description': 'Сообщество игроков GTA V Online',
+    'game_title': 'GTA V Online',
+
+    # Иконка и брендинг
+    'icon': '🚓',
+    'logo_text': 'GTA Online',
+
+    # Цвета для тем
+    'themes': {
+        'dark': {
+            'primary_color': '#1DB954',     # фирменный зелёный Rockstar
+            'secondary_color': '#121212',
+            'background': '#0E0E0E',
+            'text_color': '#EAEAEA'
+        },
+        'light': {
+            'primary_color': '#1DB954',
+            'secondary_color': '#F2F2F2',
+            'background': '#FFFFFF',
+            'text_color': '#111111'
+        }
+    },
+
+    # SEO и мета
+    'meta_description': (
+        'Форум GTA V Online: RP, ограбления, бизнес, машины, обновления и гайды'
+    ),
+
+    # Пагинация
     'items_per_page': 20,
 }

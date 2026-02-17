@@ -78,6 +78,69 @@
     {% endfor %}
 </div>
 
+{% if active_blocks %}
+<div class="card" style="margin-bottom: 2rem; border-left: 4px solid #dc2626;">
+    <h2 style="margin-bottom: 1rem; color: #dc2626;">🚫 Активные блокировки</h2>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: var(--border);">
+                    <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Пользователь</th>
+                    <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Причина</th>
+                    <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Заблокирован</th>
+                    <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Разблокирован</th>
+                    <th style="padding: 0.75rem; text-align: center; border-bottom: 1px solid var(--border);">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for block in active_blocks %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 0.75rem;">
+                        <a href="{% url 'users:profile' block.user.username %}" style="color: var(--primary); text-decoration: none;">
+                            {{ block.user.username }}
+                        </a>
+                    </td>
+                    <td style="padding: 0.75rem; max-width: 300px; word-break: break-word;">
+                        {{ block.reason|truncatewords:10|default:"(нет причины)" }}
+                    </td>
+                    <td style="padding: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);">
+                        {{ block.created_at|date:"d.m.Y H:i" }}
+                    </td>
+                    <td style="padding: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);">
+                        {{ block.blocked_until|date:"d.m.Y H:i" }}
+                    </td>
+                    <td style="padding: 0.75rem; text-align: center;">
+                        <a href="{% url 'forum:unblock_user' block.user.pk %}" 
+                           class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #10b981; color: white; text-decoration: none;">
+                            Разблокировать
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<div class="card" style="margin-bottom: 2rem; border-left: 4px solid #f59e0b;">
+    <h2 style="margin-bottom: 1rem; color: #f59e0b;">⚙️ Управление пользователями</h2>
+    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Выберите пользователя для блокировки:</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;">
+        {% for user in all_users %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--border); border-radius: 4px;">
+            <span>{{ user.username }}</span>
+            <a href="{% url 'forum:block_user' user.pk %}" 
+               class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #dc2626; color: white; text-decoration: none;">
+                Заблокировать
+            </a>
+        </div>
+        {% empty %}
+        <p style="color: var(--text-secondary);">Нет пользователей для блокировки</p>
+        {% endfor %}
+    </div>
+</div>
+
 {% if user.role == 'admin' %}
 <div class="card" style="margin-top: 2rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white;">
     <h2 style="margin-bottom: 1rem;">⚙️ Администрирование</h2>

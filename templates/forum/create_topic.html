@@ -13,7 +13,7 @@
     <h1>Создать новую тему</h1>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">в разделе: {{ category.name }}</p>
     
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
             <label for="id_title">Название темы</label>
@@ -21,8 +21,36 @@
         </div>
         
         <div class="form-group">
+            <label>Обложка темы (необязательно)</label>
+            
+            <label class="file-label">
+                🖼️ Выбрать изображение
+                <input
+                    type="file"
+                    name="cover_image"
+                    id="id_cover_image"
+                    accept="image/*"
+                    class="file-input"
+                    onchange="updateFileName(this)"
+                >
+            </label>
+            
+            <span class="file-name" id="file-name">Файл не выбран</span>
+            
+            <small class="markdown-hint">
+                Рекомендуемый размер: 1200×600
+            </small>
+        </div>
+        
+        <div class="form-group">
             <label for="id_first_post">Первое сообщение</label>
             <textarea name="first_post" id="id_first_post" rows="8" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;"></textarea>
+            <small class="markdown-hint">
+                Поддерживается Markdown:<br>
+                <strong>жирный</strong>, <em>курсив</em>, <code>`код`</code><br>
+                [ссылка](https://example.com)<br>
+                ![картинка](https://...)
+            </small>
         </div>
         
         <div style="display: flex; gap: 0.5rem;">

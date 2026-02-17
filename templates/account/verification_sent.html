@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Проверьте Email - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">✉️</div>
+    <h1 style="margin-bottom: 1rem;">Проверьте вашу почту</h1>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Мы отправили письмо для подтверждения на <strong>{{ email }}</strong>. 
+        Пожалуйста, перейдите по ссылке в письме для активации аккаунта.
+    </p>
+    
+    <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px; text-align: left;">
+        <p style="color: #1e3a8a; margin: 0; font-size: 0.9rem;">
+            <strong>Не видите письмо?</strong><br>
+            • Проверьте папку "Спам"<br>
+            • Убедитесь, что указали правильный email<br>
+            • Письмо может прийти в течение нескольких минут
+        </p>
+    </div>
+    
+    <a href="{% url 'forum:index' %}" class="btn" style="display: inline-block; text-decoration: none;">
+        На главную
+    </a>
+</div>
+{% endblock %}

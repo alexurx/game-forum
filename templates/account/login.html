@@ -7,20 +7,37 @@
 <div class="card" style="max-width: 500px; margin: 2rem auto;">
     <h1 style="text-align: center; margin-bottom: 1.5rem;">Вход</h1>
     
-    <form method="post">
+    {% if form.errors %}
+        <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px;">
+            <p style="color: #991b1b; margin: 0;">Неверный логин или пароль. Попробуйте еще раз.</p>
+        </div>
+    {% endif %}
+    
+    <form method="post" action="{% url 'account_login' %}">
         {% csrf_token %}
         
         <div class="form-group">
-            <label for="id_username">Логин</label>
-            <input type="text" name="username" id="id_username" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
+            <label for="id_login">Email или логин</label>
+            <input type="text" name="login" id="id_login" required autofocus 
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
         </div>
         
         <div class="form-group">
             <label for="id_password">Пароль</label>
-            <input type="password" name="password" id="id_password" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
+            <input type="password" name="password" id="id_password" required 
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
         </div>
         
-        <button type="submit" class="btn" style="width: 100%;">Войти</button>
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="remember" id="id_remember" style="width: auto;">
+            <label for="id_remember" style="margin: 0; font-weight: normal;">Запомнить меня</label>
+        </div>
+        
+        <button type="submit" class="btn" style="width: 100%; padding: 0.7rem; font-size: 1rem; font-weight: 500;">Войти</button>
+        
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
     </form>
     
     <!-- Divider -->
@@ -42,8 +59,8 @@
     </a>
     
     <div style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">
-        <p><a href="{% url 'users:password_reset_request' %}" style="color: var(--primary);">Забыли пароль?</a></p>
-        <p style="margin-top: 0.5rem;">Нет аккаунта? <a href="{% url 'users:register' %}" style="color: var(--primary);">Регистрация</a></p>
+        <p><a href="{% url 'account_reset_password' %}" style="color: var(--primary);">Забыли пароль?</a></p>
+        <p style="margin-top: 0.5rem;">Нет аккаунта? <a href="{% url 'account_signup' %}" style="color: var(--primary);">Регистрация</a></p>
     </div>
 </div>
 {% endblock %}

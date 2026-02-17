@@ -1,5 +1,24 @@
 from django.contrib import admin
-from .models import Category, Topic, Post
+from .models import Category, Topic, Post, ForumConfig
+
+@admin.register(ForumConfig)
+class ForumConfigAdmin(admin.ModelAdmin):
+    list_display = ['name', 'game_title']
+    fieldsets = (
+        ('Основное', {
+            'fields': ('name', 'game_title', 'description')
+        }),
+        ('Логотип', {
+            'fields': ('logo_image', 'logo_text', 'icon'),
+            'description': 'Выберите картинку ИЛИ установите иконку + текст'
+        }),
+        ('Цвета', {
+            'fields': ('primary_color', 'secondary_color')
+        }),
+        ('SEO & Пагинация', {
+            'fields': ('meta_description', 'items_per_page')
+        }),
+    )
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):

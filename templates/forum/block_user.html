@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Блокировка пользователя - {{ user_to_block.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Блокировка пользователя: {{ user_to_block.username }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Внимание!</strong> Данный пользователь будет заблокирован от отправки сообщений на форуме.
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="id_block_duration" class="form-label">Длительность блокировки</label>
+                            <div class="input-group">
+                                <input type="number" name="block_duration" id="id_block_duration" 
+                                       class="form-control {% if form.block_duration.errors %}is-invalid{% endif %}"
+                                       min="1" required value="{{ form.block_duration.value|default:'' }}">
+                                <select name="time_unit" id="id_time_unit" class="form-select {% if form.time_unit.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Выберите единицу времени</option>
+                                    <option value="minutes" {% if form.time_unit.value == 'minutes' %}selected{% endif %}>Минуты</option>
+                                    <option value="hours" {% if form.time_unit.value == 'hours' %}selected{% endif %}>Часы</option>
+                                    <option value="days" {% if form.time_unit.value == 'days' %}selected{% endif %}>Дни</option>
+                                </select>
+                            </div>
+                            {% if form.block_duration.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.block_duration.errors }}
+                                </div>
+                            {% endif %}
+                            {% if form.time_unit.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.time_unit.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_reason" class="form-label">Причина блокировки</label>
+                            <textarea name="reason" id="id_reason" 
+                                      class="form-control {% if form.reason.errors %}is-invalid{% endif %}"
+                                      rows="4" placeholder="Введите причину блокировки...">{{ form.reason.value|default:'' }}</textarea>
+                            {% if form.reason.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.reason.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Примеры:</label>
+                            <ul>
+                                <li><strong>1 час</strong> - за нарушение правил форума</li>
+                                <li><strong>3 часа</strong> - за оскорбительное поведение</li>
+                                <li><strong>1 день</strong> - за спам</li>
+                                <li><strong>7 дней</strong> - за серьёзное нарушение</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-ban"></i> Заблокировать пользователя
+                            </button>
+                            <a href="{% url 'forum:moderator_panel' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Вернуться в панель
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Валидация формы
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

@@ -3,12 +3,42 @@
 {% block title %}Достижения - {{ FORUM_CONFIG.name }}{% endblock %}
 
 {% block content %}
+<style>
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .achievements-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+    }
+
+    @media (max-width: 430px) {
+        .achievements-grid {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .achievement-icon {
+            font-size: 2.5rem !important;
+        }
+
+        .achievement-card h3 {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+
 <h1 style="margin-bottom: 1.5rem;">Все достижения</h1>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+<div class="achievements-grid">
     {% for achievement in achievements %}
-    <div class="card">
-        <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">{{ achievement.icon }}</div>
+    <div class="card achievement-card">
+        <div class="achievement-icon" style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">{{ achievement.icon }}</div>
         <h3 style="text-align: center; margin-bottom: 0.5rem;">{{ achievement.name }}</h3>
         <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1rem;">
             {{ achievement.description }}

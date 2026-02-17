@@ -3,6 +3,32 @@ from django.utils import timezone
 from django.urls import reverse
 from users.models import User
 
+class ForumConfig(models.Model):
+    """Глобальная конфигурация форума"""
+    name = models.CharField(max_length=100, default='Forum')
+    logo_text = models.CharField(max_length=100, blank=True)
+    logo_image = models.ImageField(upload_to='logos/', blank=True, null=True, verbose_name='Логотип (картинка)')
+    description = models.TextField(blank=True)
+    game_title = models.CharField(max_length=100, blank=True)
+    icon = models.CharField(max_length=10, default='🎮')
+    primary_color = models.CharField(max_length=7, default='#4E1260')
+    secondary_color = models.CharField(max_length=7, default='#0f1923')
+    meta_description = models.TextField(blank=True)
+    items_per_page = models.IntegerField(default=20)
+    
+    class Meta:
+        verbose_name = 'Forum Configuration'
+        verbose_name_plural = 'Forum Configuration'
+    
+    def __str__(self):
+        return self.name
+    
+    @classmethod
+    def get_config(cls):
+        """Получить конфиг или создать дефолтный"""
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -25,6 +51,7 @@ class Category(models.Model):
 class Topic(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='topics')
     title = models.CharField(max_length=200)
+    cover_image = models.ImageField(upload_to='topic_covers/', blank=True, null=True, verbose_name='Обложка темы')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='topics')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)

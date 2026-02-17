@@ -32,3 +32,28 @@ class PasswordResetToken(models.Model):
     def is_valid(self):
         from datetime import timedelta
         return not self.used and (timezone.now() - self.created_at) < timedelta(hours=24)
+
+class UserBlock(models.Model):
+    """Модель для блокировки пользователя от отправки сообщений"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocks')
+    blocked_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='blocks_given')
+    reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    blocked_until = models.DateTimeField()
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f'{self.user.username} заблокирован до {self.blocked_until}'
+    
+    def is_active(self):
+        """Проверить, активна ли блокировка"""
+        return timezone.now() < self.blocked_until
+    
+    def get_remaining_time(self):
+        """Получить оставшееся время блокировки"""
+        if self.is_active():
+            remaining = self.blocked_until - timezone.now()
+            return remaining
+        return None

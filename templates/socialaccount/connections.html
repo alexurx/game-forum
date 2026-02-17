@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Связать аккаунты - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+    <h1 style="text-align: center; margin-bottom: 1.5rem;">Связать аккаунты</h1>
+    
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px;">
+        <p style="color: #92400e; margin: 0;">
+            <strong>Внимание!</strong> Уже существует аккаунт с этим email адресом. 
+            Хотите связать ваш аккаунт <strong>{{ account.provider|title }}</strong> с существующим аккаунтом?
+        </p>
+    </div>
+    
+    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+        <p style="margin: 0; color: var(--text-secondary);">
+            <strong>Email:</strong> {{ account.extra_data.email }}<br>
+            <strong>Провайдер:</strong> {{ account.provider|title }}
+        </p>
+    </div>
+    
+    <form method="post" action="{% url 'socialaccount_connections' %}">
+        {% csrf_token %}
+        
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" name="connect" class="btn" style="flex: 1; padding: 0.7rem; font-size: 1rem; font-weight: 500;">Да, связать аккаунты</button>
+            <a href="{% url 'account_login' %}" class="btn" style="flex: 1; background: var(--bg-secondary); color: var(--text-primary); text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                Отмена
+            </a>
+        </div>
+    </form>
+    
+    <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+        После связывания вы сможете входить через {{ account.provider|title }}
+    </p>
+</div>
+{% endblock %}

@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include('forum.urls')),
     path('users/', include('users.urls')),
     path('achievements/', include('achievements.urls')),
+    path('accounts/', include('allauth.urls')),  # Allauth URLs for social login
 ]
 
 # Вместо 'if settings.DEBUG', используем явную раздачу для локальных тестов

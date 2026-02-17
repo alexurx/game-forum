@@ -1,25 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Редактировать - VLR</title>
-</head>
-<body style="background: #1a1a1a; color: #fff; padding: 20px; font-family: Arial;">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <p><a href="/topic/{{ post.topic.pk }}/" style="color: #ff4655;">← Назад к теме</a></p>
-        
-        <div style="background: #2d2d2d; padding: 30px; border-radius: 8px; margin-top: 20px;">
-            <h1>Редактировать сообщение</h1>
-            
-            <form method="POST">
-                {% csrf_token %}
-                <label style="display: block; margin-bottom: 8px;">Текст сообщения:</label>
-                <textarea name="content" required style="width: 100%; min-height: 300px; padding: 12px; background: #1a1a1a; color: #fff; border: 1px solid #4b5563; border-radius: 6px; font-size: 16px; font-family: Arial;">{{ post.content }}</textarea>
-                <p style="margin: 10px 0; color: #9ca3af; font-size: 14px;">Вы можете редактировать сообщение в течение 30 минут</p>
-                <button type="submit" style="padding: 10px 24px; background: #ff4655; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-right: 10px;">Сохранить</button>
-                <a href="/topic/{{ post.topic.pk }}/" style="padding: 10px 24px; background: #3d3d3d; color: white; text-decoration: none; border-radius: 6px; display: inline-block;">Отмена</a>
-            </form>
+{% extends "base.html" %}
+
+{% block title %}Редактировать сообщение - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="{% url 'forum:topic_detail' post.topic.pk %}" style="color: var(--primary); text-decoration: none;">
+        ← Назад к теме
+    </a>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <h1>Редактировать сообщение</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_content">Текст сообщения</label>
+            <textarea name="content" id="id_content" rows="10" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">{{ post.content }}</textarea>
+            <small class="markdown-hint">
+                Поддерживается Markdown:<br>
+                <strong>жирный</strong>, <em>курсив</em>, <code>`код`</code><br>
+                [ссылка](https://example.com)<br>
+                ![картинка](https://...) <br>
+                Вы можете редактировать в течение 30 минут
+            </small>
         </div>
-    </div>
-</body>
-</html>
+
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <button type="submit" class="btn">Сохранить</button>
+            <a href="{% url 'forum:topic_detail' post.topic.pk %}" class="btn btn-secondary">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

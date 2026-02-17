@@ -4,10 +4,12 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 from django.db.models import Count, Max
 from .models import Category, Topic, Post
-from .forms import TopicForm, PostForm
+from .forms import TopicForm, PostForm, UserBlockForm
 from achievements.utils import check_achievements
 from config.forum_config import FORUM_CONFIG
-from users.models import User
+from users.models import User, UserBlock
+from datetime import timedelta
+from django.utils import timezone
 
 def index(request):
     categories = Category.objects.annotate(
@@ -15,7 +17,7 @@ def index(request):
         last_post_time=Max('topics__posts__created_at')
     )
     
-    recent_topics = Topic.objects.select_related('author', 'category').order_by('-created_at')[:5]
+    recent_topics = Topic.objects.select_related('author', 'category').order_by('-created_at')[:6]
     
     context = {
         'categories': categories,
@@ -55,6 +57,16 @@ def topic_detail(request, pk):
             messages.error(request, 'Эта тема закрыта для обсуждения.')
             return redirect('forum:topic_detail', pk=pk)
         
+        # Проверка блокировки пользователя
+        active_block = UserBlock.objects.filter(user=request.user).filter(blocked_until__gt=timezone.now()).first()
+        if active_block:
+            remaining_time = active_block.get_remaining_time()
+            hours = remaining_time.total_seconds() // 3600
+            minutes = (remaining_time.total_seconds() % 3600) // 60
+            reason = f' Причина: {active_block.reason}' if active_block.reason else ''
+            messages.error(request, f'Вы заблокированы от отправки сообщений на {int(hours)} часов и {int(minutes)} минут.{reason}')
+            return redirect('forum:topic_detail', pk=pk)
+        
         content = request.POST.get('content', '').strip()
         if content:
             post = Post.objects.create(
@@ -81,6 +93,7 @@ def create_topic(request, category_pk):
     if request.method == 'POST':
         title = request.POST.get('title', '').strip()
         first_post = request.POST.get('first_post', '').strip()
+        cover_image = request.FILES.get('cover_image')
         
         if not title or not first_post:
             messages.error(request, 'Заполните все поля.')
@@ -88,7 +101,8 @@ def create_topic(request, category_pk):
             topic = Topic.objects.create(
                 category=category,
                 title=title,
-                author=request.user
+                author=request.user,
+                cover_image=cover_image
             )
             
             post = Post.objects.create(
@@ -190,12 +204,20 @@ def moderator_panel(request):
     # Последние темы
     recent_topics = Topic.objects.select_related('author', 'category').order_by('-created_at')[:10]
     
+    # Активные блокировки
+    active_blocks = UserBlock.objects.filter(blocked_until__gt=timezone.now()).select_related('user', 'blocked_by').order_by('-created_at')
+    
+    # Список всех пользователей (для блокировки)
+    all_users = User.objects.filter(role='user').exclude(id=request.user.id)
+    
     context = {
         'total_topics': total_topics,
         'total_posts': total_posts,
         'total_users': total_users,
         'recent_posts': recent_posts,
         'recent_topics': recent_topics,
+        'active_blocks': active_blocks,
+        'all_users': all_users,
     }
     return render(request, 'forum/moderator_panel.html', context)
 
@@ -206,3 +228,76 @@ def custom_404(request, exception=None):
 def custom_500(request):
     """Custom 500 page"""
     return render(request, '500.html', status=500)
+
+@login_required
+def block_user(request, user_id):
+    """Блокировать пользователя от отправки сообщений"""
+    if request.user.role not in ['moderator', 'admin']:
+        messages.error(request, 'У вас нет прав для этого действия.')
+        return redirect('forum:index')
+    
+    user_to_block = get_object_or_404(User, pk=user_id)
+    
+    # Модератор не может блокировать админов
+    if request.user.role == 'moderator' and user_to_block.role == 'admin':
+        messages.error(request, 'Модератор не может блокировать администраторов.')
+        return redirect('forum:moderator_panel')
+    
+    if request.method == 'POST':
+        form = UserBlockForm(request.POST)
+        if form.is_valid():
+            block_duration = form.cleaned_data['block_duration']
+            time_unit = form.cleaned_data['time_unit']
+            
+            # Вычислить время блокировки
+            if time_unit == 'minutes':
+                blocked_until = timezone.now() + timedelta(minutes=block_duration)
+            elif time_unit == 'hours':
+                blocked_until = timezone.now() + timedelta(hours=block_duration)
+            elif time_unit == 'days':
+                blocked_until = timezone.now() + timedelta(days=block_duration)
+            
+            # Проверить, не заблокирован ли уже пользователь
+            existing_block = UserBlock.objects.filter(user=user_to_block).filter(blocked_until__gt=timezone.now()).first()
+            if existing_block:
+                messages.warning(request, f'Пользователь уже заблокирован до {existing_block.blocked_until.strftime("%d.%m.%Y %H:%M")}')
+                return redirect('forum:moderator_panel')
+            
+            # Создать блокировку
+            block = UserBlock.objects.create(
+                user=user_to_block,
+                blocked_by=request.user,
+                reason=form.cleaned_data['reason'],
+                blocked_until=blocked_until
+            )
+            
+            messages.success(request, f'Пользователь {user_to_block.username} заблокирован до {blocked_until.strftime("%d.%m.%Y %H:%M")}')
+            return redirect('forum:moderator_panel')
+    else:
+        form = UserBlockForm()
+    
+    context = {
+        'user_to_block': user_to_block,
+        'form': form,
+    }
+    return render(request, 'forum/block_user.html', context)
+
+@login_required
+def unblock_user(request, user_id):
+    """Разблокировать пользователя"""
+    if request.user.role not in ['moderator', 'admin']:
+        messages.error(request, 'У вас нет прав для этого действия.')
+        return redirect('forum:index')
+    
+    user_to_unblock = get_object_or_404(User, pk=user_id)
+    
+    # Найти активную блокировку
+    active_block = UserBlock.objects.filter(user=user_to_unblock).filter(blocked_until__gt=timezone.now()).first()
+    
+    if active_block:
+        active_block.delete()
+        messages.success(request, f'Пользователь {user_to_unblock.username} разблокирован.')
+    else:
+        messages.warning(request, f'У пользователя {user_to_unblock.username} нет активных блокировок.')
+    
+    return redirect('forum:moderator_panel')

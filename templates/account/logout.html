@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Выход - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+    <h1 style="margin-bottom: 1.5rem;">Выход из аккаунта</h1>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Вы уверены, что хотите выйти?
+    </p>
+    
+    <form method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+        <button type="submit" class="btn" style="width: 100%; padding: 0.7rem; font-size: 1rem; font-weight: 500; margin-bottom: 1rem;">Да, выйти</button>
+    </form>
+    
+    <a href="{% url 'forum:index' %}" style="color: var(--primary); text-decoration: none;">
+        Отмена
+    </a>
+</div>
+{% endblock %}

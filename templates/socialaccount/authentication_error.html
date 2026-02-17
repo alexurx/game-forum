@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Ошибка аутентификации - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+    <h1 style="margin-bottom: 1rem;">Ошибка аутентификации</h1>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Произошла ошибка при попытке входа через социальную сеть.
+    </p>
+    
+    {% if exception %}
+        <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px; text-align: left;">
+            <p style="color: #991b1b; margin: 0; font-size: 0.9rem;">
+                <strong>Детали ошибки:</strong><br>
+                {{ exception }}
+            </p>
+        </div>
+    {% endif %}
+    
+    <div style="display: flex; gap: 1rem; flex-direction: column;">
+        <a href="{% url 'account_login' %}" class="btn" style="text-decoration: none; padding: 0.7rem; font-size: 1rem; font-weight: 500;">
+            Попробовать снова
+        </a>
+        <a href="{% url 'forum:index' %}" style="color: var(--primary); text-decoration: none;">
+            На главную
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -12,4 +12,6 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.delete_post, name='delete_post'),
     path('topic/<int:pk>/close/', views.close_topic, name='close_topic'),
     path('moderator/', views.moderator_panel, name='moderator_panel'),
+    path('user/<int:user_id>/block/', views.block_user, name='block_user'),
+    path('user/<int:user_id>/unblock/', views.unblock_user, name='unblock_user'),
 ]

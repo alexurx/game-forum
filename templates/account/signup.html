@@ -7,12 +7,20 @@
 <div class="card" style="max-width: 500px; margin: 2rem auto;">
     <h1 style="text-align: center; margin-bottom: 1.5rem;">Регистрация</h1>
     
-    <form method="post">
+    {% if form.errors %}
+        <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px;">
+            <p style="color: #991b1b; margin: 0;">Пожалуйста, исправьте ошибки ниже.</p>
+        </div>
+    {% endif %}
+    
+    <form method="post" action="{% url 'account_signup' %}">
         {% csrf_token %}
         
         <div class="form-group">
             <label for="id_username">Логин</label>
-            <input type="text" name="username" id="id_username" maxlength="150" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
+            <input type="text" name="username" id="id_username" maxlength="150" required autofocus
+                   value="{{ form.username.value|default:'' }}"
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
             {% if form.username.errors %}
                 <span style="color: #dc2626; font-size: 0.85rem;">{{ form.username.errors.0 }}</span>
             {% endif %}
@@ -20,7 +28,9 @@
         
         <div class="form-group">
             <label for="id_email">Email</label>
-            <input type="email" name="email" id="id_email" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
+            <input type="email" name="email" id="id_email" required 
+                   value="{{ form.email.value|default:'' }}"
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
             {% if form.email.errors %}
                 <span style="color: #dc2626; font-size: 0.85rem;">{{ form.email.errors.0 }}</span>
             {% endif %}
@@ -28,7 +38,8 @@
         
         <div class="form-group">
             <label for="id_password1">Пароль</label>
-            <input type="password" name="password1" id="id_password1" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
+            <input type="password" name="password1" id="id_password1" required 
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
             {% if form.password1.errors %}
                 <span style="color: #dc2626; font-size: 0.85rem;">{{ form.password1.errors.0 }}</span>
             {% endif %}
@@ -36,7 +47,8 @@
         
         <div class="form-group">
             <label for="id_password2">Подтвердите пароль</label>
-            <input type="password" name="password2" id="id_password2" required style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
+            <input type="password" name="password2" id="id_password2" required 
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
             {% if form.password2.errors %}
                 <span style="color: #dc2626; font-size: 0.85rem;">{{ form.password2.errors.0 }}</span>
             {% endif %}
@@ -48,7 +60,11 @@
             </div>
         {% endif %}
         
-        <button type="submit" class="btn" style="width: 100%;">Зарегистрироваться</button>
+        <button type="submit" class="btn" style="width: 100%; padding: 0.7rem; font-size: 1rem; font-weight: 500;">Зарегистрироваться</button>
+        
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
     </form>
     
     <!-- Divider -->
@@ -70,7 +86,7 @@
     </a>
     
     <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">
-        Уже есть аккаунт? <a href="{% url 'users:login' %}" style="color: var(--primary);">Войти</a>
+        Уже есть аккаунт? <a href="{% url 'account_login' %}" style="color: var(--primary);">Войти</a>
     </p>
 </div>
 {% endblock %}

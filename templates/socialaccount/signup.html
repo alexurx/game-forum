@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Завершение регистрации - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto;">
+    <h1 style="text-align: center; margin-bottom: 1.5rem;">Завершение регистрации</h1>
+    
+    <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px;">
+        <p style="color: #1e3a8a; margin: 0;">
+            Вы входите с помощью аккаунта <strong>{{ account.provider|title }}</strong>. Пожалуйста, завершите регистрацию.
+        </p>
+    </div>
+    
+    {% if form.errors %}
+        <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px;">
+            <p style="color: #991b1b; margin: 0;">Пожалуйста, исправьте ошибки ниже.</p>
+        </div>
+    {% endif %}
+    
+    <form method="post" action="{% url 'socialaccount_signup' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_username">Логин</label>
+            <input type="text" name="username" id="id_username" maxlength="150" required autofocus
+                   value="{{ form.username.value|default:'' }}"
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-primary); font-size: 1rem; font-family: inherit;">
+            {% if form.username.errors %}
+                <span style="color: #dc2626; font-size: 0.85rem;">{{ form.username.errors.0 }}</span>
+            {% endif %}
+            <small style="color: var(--text-secondary); font-size: 0.85rem;">Этот логин будет виден другим пользователям</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="id_email">Email</label>
+            <input type="email" name="email" id="id_email" required readonly
+                   value="{{ form.email.value|default:'' }}"
+                   style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text-secondary); font-size: 1rem; font-family: inherit;">
+            {% if form.email.errors %}
+                <span style="color: #dc2626; font-size: 0.85rem;">{{ form.email.errors.0 }}</span>
+            {% endif %}
+            <small style="color: var(--text-secondary); font-size: 0.85rem;">Email получен от {{ account.provider|title }}</small>
+        </div>
+        
+        {% if form.non_field_errors %}
+            <div style="color: #dc2626; margin-bottom: 1rem;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <button type="submit" class="btn" style="width: 100%; padding: 0.7rem; font-size: 1rem; font-weight: 500;">Завершить регистрацию</button>
+        
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

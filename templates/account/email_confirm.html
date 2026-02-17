@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Подтверждение Email - {{ FORUM_CONFIG.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📧</div>
+    <h1 style="margin-bottom: 1rem;">Подтвердите ваш Email</h1>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Пожалуйста, подтвердите, что адрес <strong>{{ email }}</strong> принадлежит вам.
+    </p>
+    
+    <form method="post" action="{% url 'account_confirm_email' key %}">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="width: 100%; padding: 0.7rem; font-size: 1rem; font-weight: 500; margin-bottom: 1rem;">Подтвердить Email</button>
+    </form>
+    
+    <a href="{% url 'forum:index' %}" style="color: var(--primary); text-decoration: none;">
+        На главную
+    </a>
+</div>
+{% endblock %}
